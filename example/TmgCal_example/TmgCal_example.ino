@@ -1,0 +1,29 @@
+#include "TmgEnc.h"
+
+TmgEncClass tmgEnc;
+
+void setup() {
+  //put your setup code here, to run once:
+  Serial.begin(115200);//波特率115200，用于结果输出
+  Serial1.begin(2500000);//多摩川波特率2.5M
+  tmgEnc.pSerial = &Serial1;
+  delay(1000);
+  //ABS清零指令，连续发送10次
+  if(tmgEnc.tmgRequest_C2()){
+     Serial.print(tmgEnc.ABS);
+  }
+}
+
+void loop() {
+  //put your main code here, to run repeatedly: 
+  if(tmgEnc.tmgRequest_1A()){
+     //输出解码结果
+     Serial.print(tmgEnc.ABS);
+     Serial.print(',');
+     Serial.print(tmgEnc.ABM);
+     Serial.print(',');
+     Serial.println(tmgEnc.ALMC);
+  }
+  //延时100ms
+  delay(100);
+}
