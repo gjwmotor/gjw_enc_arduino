@@ -5,6 +5,7 @@ TmgEncClass tmgEnc;
 void setup() {
   //put your setup code here, to run once:
   Serial.begin(115200);//波特率115200，用于结果输出
+  //Serial1.begin(2500000, SERIAL_8N1, 18, 17);//esp32-s3
   Serial1.begin(2500000);//多摩川波特率2.5M
   tmgEnc.pSerial = &Serial1;
   delay(1000);
