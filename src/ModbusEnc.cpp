@@ -67,8 +67,17 @@ uint8_t ModbusEnc::writeMtReg(uint8_t masId, uint16_t regAddr, uint16_t regDat)
 	writeReg(masId, MDENC_CTL_REGOPT, MDENC_OPT_WCMD);
 	writeReg(masId, MDENC_CTL_REGCMD, MDENC_REG_WCMD);
 	writeReg(masId, MDENC_CTL_REGADDR, regAddr);
-	unLockMem(masId, MDENC_CTL_RST, 0);	
-	return writeReg(masId, MDENC_CTL_REGDAT, regDat);
+	writeReg(masId, MDENC_CTL_REGDAT, regDat);
+	return unLockMem(masId, MDENC_CTL_RST, 0);	
+}
+
+uint8_t ModbusEnc::flushMtReg(uint8_t masId)
+{
+	writeReg(masId, MDENC_CTL_REGOPT, MDENC_OPT_RCMD);
+	writeReg(masId, MDENC_CTL_REGCMD, MDENC_REG_FCMD);
+	writeReg(masId, MDENC_CTL_REGADDR, 0x00);
+	unLockMem(masId, MDENC_CTL_RST, 0);
+	return readReg(masId, MDENC_CTL_REGDAT);
 }
 
 int16_t ModbusEnc::readABZ(uint8_t masId)
@@ -82,21 +91,7 @@ int16_t ModbusEnc::readABZ(uint8_t masId)
 
 uint8_t ModbusEnc::writeABZ(uint8_t masId, uint16_t abzVal)
 {
-	writeReg(masId, MDENC_CTL_REGOPT, MDENC_OPT_WCMD);
-	writeReg(masId, MDENC_CTL_REGCMD, MDENC_REG_WCMD);
-	writeReg(masId, MDENC_CTL_REGADDR, 0x07);
-	writeReg(masId, MDENC_CTL_REGDAT, abzVal>>8);
-
-	unLockMem(masId, MDENC_CTL_RST, 0);
-	writeReg(masId, MDENC_CTL_REGOPT, MDENC_OPT_WCMD);
-	writeReg(masId, MDENC_CTL_REGCMD, MDENC_REG_WCMD);
-	writeReg(masId, MDENC_CTL_REGADDR, 0x08);
-	writeReg(masId, MDENC_CTL_REGDAT, (abzVal&0xff));
-	unLockMem(masId, MDENC_CTL_RST, 0);
-	writeReg(masId, MDENC_CTL_REGOPT, MDENC_OPT_RCMD);
-	writeReg(masId, MDENC_CTL_REGCMD, MDENC_REG_FCMD);
-	writeReg(masId, MDENC_CTL_REGADDR, 0x00);
-	unLockMem(masId, MDENC_CTL_RST, 0);
-	uint8_t rDat = readReg(masId, MDENC_CTL_REGDAT);
-	return rDat==0x55;
+	writeMtReg(masId, 0x07, abzVal>>8);
+	writeMtReg(masId, 0x08, (abzVal&0xff));
+	return (flushMtReg(masId)==0x55);
 }

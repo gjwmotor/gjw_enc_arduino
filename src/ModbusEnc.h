@@ -51,6 +51,7 @@ public:
 	uint16_t readStatus(uint8_t masId);
 	uint8_t readMtReg(uint8_t masId, uint16_t regAddr);
 	uint8_t writeMtReg(uint8_t masId, uint16_t regAddr, uint16_t regDat);
+	uint8_t flushMtReg(uint8_t masId);
 	int16_t readABZ(uint8_t masId);
 	uint8_t writeABZ(uint8_t masId, uint16_t abzVal);
 	uint8_t unLockMem(uint8_t masId, uint16_t wAddr, uint16_t Key);
